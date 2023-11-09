@@ -1,0 +1,10 @@
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class StandardTests {
+    @Test
+    void subrtract() {
+        assertEquals(1, 1);
+    }
+}
