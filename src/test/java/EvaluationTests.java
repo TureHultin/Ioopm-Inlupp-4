@@ -1,4 +1,3 @@
-import org.ioopm.calculator.Tests;
 import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
@@ -83,8 +82,8 @@ public class EvaluationTests {
                 IllegalExpressionException.class,
                 () -> assignment.eval(vars));
 
-        Tests.check(vars.isEmpty(), "Vars not updated after exception");
+        Assertions.assertTrue(vars.isEmpty(), "Vars not updated after exception");
 
-        Tests.testEvaluating(new Variable("Answer"), new Variable("Answer"));
+        Assertions.assertEquals(new Variable("Answer"), new Variable("Answer").eval(vars));
     }
 }
