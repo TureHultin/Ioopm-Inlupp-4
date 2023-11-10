@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class EvaluationTests {
 
     Environment vars;
@@ -18,14 +20,14 @@ public class EvaluationTests {
 
     @Test
     void evaluatesToConstant() throws IllegalExpressionException {
-        Assertions.assertEquals(new Constant(15.0), new Subtraction(
+        assertEquals(new Constant(15.0), new Subtraction(
                 new Multiplication(
                         new Addition(
                                 new Constant(1),
                                 new Constant(1)),
                         new Constant(8)),
                 new Constant(1)).eval(vars));
-        Assertions.assertEquals(new Constant(4.0), new Multiplication(
+        assertEquals(new Constant(4.0), new Multiplication(
                 new Addition(new Constant(1), new Constant(1)),
                 new Addition(new Constant(1), new Constant(1))
         ).eval(vars));
@@ -34,7 +36,7 @@ public class EvaluationTests {
     @Disabled("Binary helper is miss implemented")
     @Test
     void notFullyEvaluated() throws IllegalExpressionException {
-        Assertions.assertEquals(new Variable("x"), new Variable("x").eval(vars));
+        assertEquals(new Variable("x"), new Variable("x").eval(vars));
 
         SymbolicExpression complex = new Subtraction(
                 new Multiplication(
@@ -44,7 +46,7 @@ public class EvaluationTests {
                         new Constant(2)),
                 new Variable("x"));
 
-        Assertions.assertEquals(new Subtraction(
+        assertEquals(new Subtraction(
                         new Constant(24),
                         new Variable("x")),
                 complex.eval(vars));
@@ -55,21 +57,21 @@ public class EvaluationTests {
         SymbolicExpression assignment = new Assignment(
                 new Addition(new Constant(40), new Constant(2)), new Variable("x"));
 
-        Assertions.assertEquals(new Constant(42), assignment.eval(vars));
-        Assertions.assertEquals(new Constant(42), new Variable("x").eval(vars));
+        assertEquals(new Constant(42), assignment.eval(vars));
+        assertEquals(new Constant(42), new Variable("x").eval(vars));
     }
 
     @Test
     void nestedAssignment() throws IllegalExpressionException {
 
-        Assertions.assertEquals(new Constant(3),
+        assertEquals(new Constant(3),
                 new Assignment(
                         new Assignment(new Constant(3),
                                 new Variable("x")),
                         new Variable("y")).eval(vars));
 
-        Assertions.assertEquals(new Constant(3), new Variable("x").eval(vars));
-        Assertions.assertEquals(new Constant(3), new Variable("y").eval(vars));
+        assertEquals(new Constant(3), new Variable("x").eval(vars));
+        assertEquals(new Constant(3), new Variable("y").eval(vars));
     }
 
     @Test
@@ -84,6 +86,6 @@ public class EvaluationTests {
 
         Assertions.assertTrue(vars.isEmpty(), "Vars not updated after exception");
 
-        Assertions.assertEquals(new Variable("Answer"), new Variable("Answer").eval(vars));
+        assertEquals(new Variable("Answer"), new Variable("Answer").eval(vars));
     }
 }

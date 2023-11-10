@@ -1,4 +1,3 @@
-import org.ioopm.calculator.Tests;
 import org.ioopm.calculator.ast.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -7,7 +6,7 @@ import org.junit.jupiter.api.Test;
 public class PrintingTests {
     @Test
     void printingConstant() {
-        Tests.testPrinting("0.25", new Constant(0.25));
+        Assertions.assertEquals("0.25", new Constant(0.25).toString());
     }
 
     @Test
