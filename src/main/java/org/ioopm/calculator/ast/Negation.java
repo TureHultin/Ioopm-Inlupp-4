@@ -1,0 +1,34 @@
+package org.ioopm.calculator.ast;
+
+import org.ioopm.calculator.parser.Environment;
+import org.ioopm.calculator.parser.IllegalExpressionException;
+
+public class Negation extends Unary {
+    public Negation(SymbolicExpression rhs) {
+        super(rhs);
+    }
+
+    @Override
+    public int getPriority() {
+        return 100;
+    }
+
+    @Override
+    public String getName() {
+        return "-";
+    }
+
+    @Override
+    public SymbolicExpression eval(Environment vars) throws IllegalExpressionException {
+        return evalUnary(vars, Negation::new, rhs -> -rhs);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Negation other) {
+            return getRhs().equals(other.getRhs());
+        }
+
+        return false;
+    }
+}
