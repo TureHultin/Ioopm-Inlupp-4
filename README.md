@@ -7,13 +7,11 @@
 
 ## Running
 
-run
+To run the calculator
 
 ```shell
-mvn package
+mvn exec:java
 ```
-
-and running the produced .jar
 
 ## Tests
 
