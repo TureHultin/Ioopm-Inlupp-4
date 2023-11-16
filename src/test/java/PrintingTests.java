@@ -25,7 +25,6 @@ public class PrintingTests {
         Assertions.assertEquals("1.0 * x = y = z", nested.toString());
     }
 
-    @Disabled("Just override the printing")
     @Test
     void negationPrintsNice() {
         SymbolicExpression nested = new Negation(new Variable("t"));
