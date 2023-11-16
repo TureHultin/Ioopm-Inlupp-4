@@ -8,14 +8,15 @@ public class Negation extends Unary {
         super(rhs);
     }
 
-    @Override
-    public int getPriority() {
-        return 100;
-    }
 
     @Override
     public String getName() {
         return "-";
+    }
+
+    @Override
+    public String toString() {
+        return getName() + getRhs().toString();
     }
 
     @Override

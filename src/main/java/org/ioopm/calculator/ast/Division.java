@@ -19,6 +19,11 @@ public class Division extends Binary {
     }
 
     @Override
+    public String toString() {
+        return super.toStringNonCommutative();
+    }
+
+    @Override
     public SymbolicExpression eval(Environment vars) throws IllegalExpressionException {
         return evalBinary(vars, Division::new, (left, right) -> left / right);
     }

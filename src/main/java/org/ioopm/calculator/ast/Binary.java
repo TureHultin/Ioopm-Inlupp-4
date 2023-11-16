@@ -44,7 +44,26 @@ public abstract class Binary extends SymbolicExpression {
             return new Constant(simplifiedValue);
         }
 
-        return makeNode.apply(lhs, rhs);
+        return makeNode.apply(lhsEval, rhsEval);
+    }
+
+    protected String toStringNonCommutative() {
+        String lhsString = getLhs().toString();
+
+        if (getLhs().getPriority() < getPriority()) {
+            lhsString = '(' + lhsString + ')';
+        }
+
+        String rhsString = rhs.toString();
+
+        // The <= is to handle the weird things where
+        // (1 + 2 ) - (1 + 2) == 1 + 2 - (1 + 2)
+        // but not 1 + 2 - 1 + 2
+        // or 2 * 2 / 2 * 2 is not 2 * 2 /(2 * 2)
+        if (getRhs().getPriority() <= getPriority()) {
+            rhsString = '(' + rhsString + ')';
+        }
+        return lhsString + " " + getName() + " " + rhsString;
     }
 
     @Override
@@ -55,11 +74,8 @@ public abstract class Binary extends SymbolicExpression {
         }
         String rhsString = rhs.toString();
 
-        // The <= is to handle the weird things where
-        // (1 + 2 ) - (1 + 2) == 1 + 2 - (1 + 2)
-        // but not 1 + 2 - 1 + 2
-        // or 2 * 2 / 2 * 2 is not 2 * 2 /(2 * 2)
-        if (rhs.getPriority() <= getPriority()) {
+
+        if (rhs.getPriority() < getPriority()) {
             rhsString = '(' + rhsString + ')';
         }
         return lhsString + " " + getName() + " " + rhsString;

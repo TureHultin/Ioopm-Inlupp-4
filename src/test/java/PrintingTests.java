@@ -1,6 +1,5 @@
 import org.ioopm.calculator.ast.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PrintingTests {
@@ -25,7 +24,6 @@ public class PrintingTests {
         Assertions.assertEquals("1.0 * x = y = z", nested.toString());
     }
 
-    @Disabled("Just override the printing")
     @Test
     void negationPrintsNice() {
         SymbolicExpression nested = new Negation(new Variable("t"));
@@ -35,7 +33,7 @@ public class PrintingTests {
     @Test
     void printingUnary() {
         SymbolicExpression singleSin = new Sin(new Variable("x"));
-        Assertions.assertEquals("sin x", singleSin.toString());
+        Assertions.assertEquals("Sin x", singleSin.toString());
 
         SymbolicExpression complexSin = new Sin(
                 new Multiplication(
@@ -43,10 +41,10 @@ public class PrintingTests {
                         new Variable("t")
                 )
         );
-        Assertions.assertEquals("sin(10.0 * t)", complexSin.toString());
+        Assertions.assertEquals("Sin(10.0 * t)", complexSin.toString());
 
         SymbolicExpression nested = new Log(new Exp(new Variable("t")));
-        Assertions.assertEquals("log(exp t)", nested.toString());
+        Assertions.assertEquals("Log(Exp t)", nested.toString());
     }
 
     @Test
@@ -68,7 +66,6 @@ public class PrintingTests {
 
     }
 
-    @Disabled("Fix printing first")
     @Test
     void funkyNoncommutativePrinting() {
         SymbolicExpression subtraction = new Subtraction(
@@ -88,7 +85,7 @@ public class PrintingTests {
                 new Multiplication(new Constant(3), new Constant(4)));
         Assertions.assertEquals("1.0 * 2.0 / (3.0 * 4.0)", division.toString());
 
-        SymbolicExpression multiplication = new Division(
+        SymbolicExpression multiplication = new Multiplication(
                 new Multiplication(new Constant(1), new Constant(2)),
                 new Multiplication(new Constant(3), new Constant(4)));
         Assertions.assertEquals("1.0 * 2.0 * 3.0 * 4.0", multiplication.toString());

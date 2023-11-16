@@ -20,6 +20,11 @@ public class Subtraction extends Binary {
     }
 
     @Override
+    public String toString() {
+        return super.toStringNonCommutative();
+    }
+
+    @Override
     public SymbolicExpression eval(Environment vars) throws IllegalExpressionException {
         return evalBinary(vars, Subtraction::new, (left, right) -> left - right);
     }

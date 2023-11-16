@@ -1,9 +1,9 @@
+import org.ioopm.calculator.Tests;
 import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,13 +27,13 @@ public class EvaluationTests {
                                 new Constant(1)),
                         new Constant(8)),
                 new Constant(1)).eval(vars));
+
         assertEquals(new Constant(4.0), new Multiplication(
                 new Addition(new Constant(1), new Constant(1)),
                 new Addition(new Constant(1), new Constant(1))
         ).eval(vars));
     }
 
-    @Disabled("Binary helper is miss implemented")
     @Test
     void notFullyEvaluated() throws IllegalExpressionException {
         assertEquals(new Variable("x"), new Variable("x").eval(vars));
