@@ -1,6 +1,5 @@
 import org.ioopm.calculator.ast.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PrintingTests {
@@ -67,7 +66,6 @@ public class PrintingTests {
 
     }
 
-    @Disabled("Fix printing first")
     @Test
     void funkyNoncommutativePrinting() {
         SymbolicExpression subtraction = new Subtraction(
@@ -87,7 +85,7 @@ public class PrintingTests {
                 new Multiplication(new Constant(3), new Constant(4)));
         Assertions.assertEquals("1.0 * 2.0 / (3.0 * 4.0)", division.toString());
 
-        SymbolicExpression multiplication = new Division(
+        SymbolicExpression multiplication = new Multiplication(
                 new Multiplication(new Constant(1), new Constant(2)),
                 new Multiplication(new Constant(3), new Constant(4)));
         Assertions.assertEquals("1.0 * 2.0 * 3.0 * 4.0", multiplication.toString());
