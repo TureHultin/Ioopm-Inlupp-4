@@ -2,6 +2,7 @@ import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.parser.CalculatorParser;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
+import org.ioopm.calculator.parser.SyntaxErrorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 public class ParserTests {
     CalculatorParser parser;
@@ -77,4 +79,8 @@ public class ParserTests {
 
     }
 
+    @Test
+    void unbalancedbracesFail() throws IOException {
+        assertThrowsExactly(SyntaxErrorException.class, () -> parser.parse("(1 = y", new Environment()));
+    }
 }
