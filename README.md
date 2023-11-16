@@ -3,7 +3,7 @@
 ## Authors
 
 - Casper Björkman
-- Ture
+- Ture Hultin
 
 ## Running
 
