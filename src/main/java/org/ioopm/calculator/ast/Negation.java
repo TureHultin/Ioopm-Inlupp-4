@@ -7,11 +7,7 @@ public class Negation extends Unary {
     public Negation(SymbolicExpression rhs) {
         super(rhs);
     }
-
-    @Override
-    public int getPriority() {
-        return 100;
-    }
+    
 
     @Override
     public String getName() {

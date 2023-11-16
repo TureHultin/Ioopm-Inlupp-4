@@ -28,6 +28,7 @@ public class EvaluationTests {
                                 new Constant(1)),
                         new Constant(8)),
                 new Constant(1)).eval(vars));
+
         assertEquals(new Constant(4.0), new Multiplication(
                 new Addition(new Constant(1), new Constant(1)),
                 new Addition(new Constant(1), new Constant(1))
