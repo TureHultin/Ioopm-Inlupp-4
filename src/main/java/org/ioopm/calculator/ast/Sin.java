@@ -10,7 +10,7 @@ public class Sin extends Unary {
 
     @Override
     public String getName() {
-        return "sin";
+        return "Sin";
     }
 
     @Override

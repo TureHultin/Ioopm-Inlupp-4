@@ -10,7 +10,7 @@ public class Exp extends Unary {
 
     @Override
     public String getName() {
-        return "exp";
+        return "Exp";
     }
 
     @Override
