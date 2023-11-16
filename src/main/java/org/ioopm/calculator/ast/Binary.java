@@ -44,7 +44,7 @@ public abstract class Binary extends SymbolicExpression {
             return new Constant(simplifiedValue);
         }
 
-        return makeNode.apply(lhs, rhs);
+        return makeNode.apply(lhsEval, rhsEval);
     }
 
     protected String toStringNonCommutative() {

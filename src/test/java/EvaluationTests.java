@@ -4,7 +4,6 @@ import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +34,6 @@ public class EvaluationTests {
         ).eval(vars));
     }
 
-    @Disabled("Binary helper is miss implemented")
     @Test
     void notFullyEvaluated() throws IllegalExpressionException {
         assertEquals(new Variable("x"), new Variable("x").eval(vars));
