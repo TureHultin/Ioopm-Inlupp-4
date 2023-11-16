@@ -4,8 +4,11 @@ import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -47,5 +50,31 @@ public class ParserTests {
         SymbolicExpression parseResult = parser.parse(string, new Environment());
         assertEquals(tree, parseResult);
     }
-    
+
+    @Test
+    void nestedNegation() throws IOException, IllegalExpressionException {
+        SymbolicExpression tree = new Negation(new Negation(new Negation(new Variable("x"))));
+
+        String string = tree.toString();
+        SymbolicExpression parseResult = parser.parse(string, new Environment());
+        assertEquals(tree, parseResult);
+
+    }
+
+    static Stream<SymbolicExpression> namedUnaries() {
+        return Stream.of(new Sin(new Constant(1)),
+                new Cos(new Constant(1)),
+                new Log(new Constant(1)),
+                new Exp(new Constant(1)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("namedUnaries")
+    void namedUnary(SymbolicExpression tree) throws IOException, IllegalExpressionException {
+        String string = tree.toString();
+        SymbolicExpression parseResult = parser.parse(string, new Environment());
+        assertEquals(tree, parseResult);
+
+    }
+
 }
