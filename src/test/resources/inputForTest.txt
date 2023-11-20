@@ -1,0 +1,26 @@
+a+3=b
+3-b
+Clear
+b
+x+3=z
+2=x
+x+z*2
+3=z
+x+z*2
+Clear
+x+3=z
+2=x
+z+x*6
+Vars
+Clear
+Vars
+3=a
+-a--7
+-a---7
+1/(2+8)=a
+-Sin(Exp(a*a*10))
+-ans + 2
+2=x=y
+(x+y=z)-(z-1)*(1=x)
+---x
+Quit
