@@ -1,5 +1,6 @@
 package org.ioopm.calculator.ast;
 
+import org.ioopm.calculator.ast.visitor.Visitor;
 import org.ioopm.calculator.parser.Environment;
 
 public class Variable extends Atom {
@@ -33,5 +34,11 @@ public class Variable extends Atom {
     @Override
     public int hashCode() {
         return identifier.hashCode();
+    }
+
+
+    @Override
+    public <T> T accept(Visitor<T> v) {
+        return v.visit(this);
     }
 }

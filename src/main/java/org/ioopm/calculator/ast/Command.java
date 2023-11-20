@@ -2,7 +2,7 @@ package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.parser.Environment;
 
-public class Command extends SymbolicExpression {
+public abstract class Command extends SymbolicExpression {
     @Override
     public int getPriority() {
         throw new RuntimeException("Tried to print command as part of an mathematical expression");

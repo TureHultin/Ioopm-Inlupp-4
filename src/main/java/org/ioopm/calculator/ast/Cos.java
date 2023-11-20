@@ -1,5 +1,6 @@
 package org.ioopm.calculator.ast;
 
+import org.ioopm.calculator.ast.visitor.Visitor;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 
@@ -26,5 +27,10 @@ public class Cos extends Unary {
         }
 
         return false;
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> v) {
+        return v.visit(this);
     }
 }

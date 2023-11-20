@@ -1,5 +1,6 @@
 package org.ioopm.calculator.ast;
 
+import org.ioopm.calculator.ast.visitor.Visitor;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 
@@ -58,6 +59,8 @@ public abstract class SymbolicExpression {
      * @throws RuntimeException           when eval-ing a command
      */
     public abstract SymbolicExpression eval(Environment vars) throws IllegalExpressionException;
+
+    public abstract <T> T accept(Visitor<T> v);
 }
 
 

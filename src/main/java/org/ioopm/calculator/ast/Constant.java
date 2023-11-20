@@ -1,5 +1,6 @@
 package org.ioopm.calculator.ast;
 
+import org.ioopm.calculator.ast.visitor.Visitor;
 import org.ioopm.calculator.parser.Environment;
 
 public class Constant extends Atom {
@@ -36,5 +37,11 @@ public class Constant extends Atom {
         }
 
         return false;
+    }
+
+
+    @Override
+    public <T> T accept(Visitor<T> v) {
+        return v.visit(this);
     }
 }

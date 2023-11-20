@@ -1,5 +1,7 @@
 package org.ioopm.calculator.ast;
 
+import org.ioopm.calculator.ast.visitor.Visitor;
+
 /**
  * Command for removing the local variables
  */
@@ -11,5 +13,10 @@ public class Clear extends Command {
 
     public static Clear instance() {
         return theInstance;
+    }
+
+    @Override
+    public <T> T accept(Visitor<T> v) {
+        return v.visit(this);
     }
 }
