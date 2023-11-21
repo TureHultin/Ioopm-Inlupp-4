@@ -1,4 +1,3 @@
-import org.ioopm.calculator.Tests;
 import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
