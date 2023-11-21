@@ -1,8 +1,6 @@
 package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.ast.visitor.Visitor;
-import org.ioopm.calculator.parser.Environment;
-import org.ioopm.calculator.parser.IllegalExpressionException;
 
 public class Cos extends Unary {
     public Cos(SymbolicExpression rhs) {
@@ -14,11 +12,6 @@ public class Cos extends Unary {
         return "Cos";
     }
 
-
-    @Override
-    public SymbolicExpression eval(Environment vars) throws IllegalExpressionException {
-        return evalUnary(vars, Cos::new, Math::cos);
-    }
 
     @Override
     public boolean equals(Object obj) {

@@ -1,8 +1,6 @@
 package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.ast.visitor.Visitor;
-import org.ioopm.calculator.parser.Environment;
-import org.ioopm.calculator.parser.IllegalExpressionException;
 
 public class Addition extends Binary {
 
@@ -18,11 +16,6 @@ public class Addition extends Binary {
     @Override
     public String getName() {
         return "+";
-    }
-
-    @Override
-    public SymbolicExpression eval(Environment vars) throws IllegalExpressionException {
-        return evalBinary(vars, Addition::new, (left, right) -> left + right);
     }
 
     @Override

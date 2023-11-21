@@ -1,8 +1,6 @@
 package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.ast.visitor.Visitor;
-import org.ioopm.calculator.parser.Environment;
-import org.ioopm.calculator.parser.IllegalExpressionException;
 
 public class Division extends Binary {
     public Division(SymbolicExpression lhs, SymbolicExpression rhs) {
@@ -24,10 +22,6 @@ public class Division extends Binary {
         return super.toStringNonCommutative();
     }
 
-    @Override
-    public SymbolicExpression eval(Environment vars) throws IllegalExpressionException {
-        return evalBinary(vars, Division::new, (left, right) -> left / right);
-    }
 
     @Override
     public boolean equals(Object obj) {

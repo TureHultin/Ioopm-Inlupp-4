@@ -1,7 +1,6 @@
 package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.ast.visitor.Visitor;
-import org.ioopm.calculator.parser.Environment;
 
 public class Constant extends Atom {
     final double value;
@@ -23,11 +22,6 @@ public class Constant extends Atom {
     @Override
     public String toString() {
         return "" + value;
-    }
-
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        return new Constant(getValue());
     }
 
     @Override

@@ -1,7 +1,5 @@
 package org.ioopm.calculator.ast;
 
-import org.ioopm.calculator.parser.Environment;
-
 public abstract class Command extends SymbolicExpression {
     @Override
     public int getPriority() {
@@ -13,10 +11,6 @@ public abstract class Command extends SymbolicExpression {
         return true;
     }
 
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        throw new RuntimeException("Can't eval() commands");
-    }
 
     @Override
     public boolean equals(Object obj) {

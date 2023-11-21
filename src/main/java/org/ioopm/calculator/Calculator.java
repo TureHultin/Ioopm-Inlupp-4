@@ -1,6 +1,7 @@
 package org.ioopm.calculator;
 
 import org.ioopm.calculator.ast.*;
+import org.ioopm.calculator.ast.visitor.EvaluationVisitor;
 import org.ioopm.calculator.parser.CalculatorParser;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
@@ -58,7 +59,8 @@ public class Calculator {
                 enteredExpressions += 1;
                 Environment savedVars = (Environment) vars.clone();
                 try {
-                    final SymbolicExpression evaluated = expr.eval(vars);
+
+                    final SymbolicExpression evaluated = new EvaluationVisitor(vars).evaluate(expr);
                     out.println(evaluated);
                     vars.put(new Variable("ans"), evaluated);
 

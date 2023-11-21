@@ -1,11 +1,5 @@
 package org.ioopm.calculator.ast;
 
-import org.ioopm.calculator.parser.Environment;
-import org.ioopm.calculator.parser.IllegalExpressionException;
-
-import java.util.function.BinaryOperator;
-import java.util.function.DoubleBinaryOperator;
-
 /**
  * Any expression with two children
  */
@@ -24,27 +18,6 @@ public abstract class Binary extends SymbolicExpression {
     Binary(SymbolicExpression lhs, SymbolicExpression rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
-    }
-
-    /**
-     * Helper to evaluate all arithmetic binary expressions
-     *
-     * @param vars     the lexical environment
-     * @param makeNode a function to create the resulting node
-     * @param reduce   the corresponding binary operator
-     * @return the evaluated expression
-     * @throws IllegalExpressionException if it contains a faulty Assignment
-     */
-    SymbolicExpression evalBinary(Environment vars, BinaryOperator<SymbolicExpression> makeNode, DoubleBinaryOperator reduce) throws IllegalExpressionException {
-        SymbolicExpression lhsEval = getLhs().eval(vars);
-        SymbolicExpression rhsEval = getRhs().eval(vars);
-
-        if (lhsEval.isConstant() && rhsEval.isConstant()) {
-            double simplifiedValue = reduce.applyAsDouble(lhsEval.getValue(), rhsEval.getValue());
-            return new Constant(simplifiedValue);
-        }
-
-        return makeNode.apply(lhsEval, rhsEval);
     }
 
     protected String toStringNonCommutative() {
