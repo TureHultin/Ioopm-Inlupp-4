@@ -1,7 +1,3 @@
-javac -d classes -sourcepath src/main/java src/main/java/org/ioopm/calculator/ast/*.java 
-javac -d classes -cp classes -sourcepath src/main/java src/main/java/org/ioopm/calculator/parser/*.java 
-javac -d classes -cp classes -sourcepath src/main/java src/main/java/org/ioopm/calculator/*.java 
-java -cp classes org.ioopm.calculator.Calculator 
 Welcome to the Symbolic Calculator!
 ? a + 3.0
 ? 3.0 - (a + 3.0)
@@ -13,7 +9,7 @@ Welcome to the Symbolic Calculator!
 ? 8.0
 ? ? x + 3.0
 ? 2.0
-? x + 3.0 + 12.0 
+? x + 3.0 + 12.0
 ? {ans=x + 3.0 + 12.0, x=2.0, z=x + 3.0}
 ? ? {}
 ? 3.0
@@ -22,8 +18,8 @@ Welcome to the Symbolic Calculator!
 ? 0.1
 ? -0.8935409432921488
 ? 2.893540943292149
-2.0
-1.0
--1.0
-? Entered Expressions: 3
-Fully Evaluated: 0
+? 2.0
+? 1.0
+? -1.0
+? Entered Expressions: 20
+Fully Evaluated: 13
