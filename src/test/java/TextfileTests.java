@@ -1,32 +1,30 @@
-import org.junit.jupiter.api.Test;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.io.*;
+import org.junit.jupiter.api.Test;
+import java.util.Scanner;
+import java.nio.file.*;
+import org.ioopm.calculator.Calculator;
 
 public class TextfileTests {
 
     @Test
-    void testCalculatorOutput() throws IOException {
-    
-        Path inputFilePath = Paths.get("src", "tests", "resources", "inputForTest.txt");
-        Path outputFilePath = Paths.get("src", "tests", "resources", "output.txt");
-        Path expectedOutputFilePath = Paths.get("src", "tests", "resources", "expectedOutputForTest.txt");
+    void textfileTest() throws FileNotFoundException, IOException {
 
-        ProcessBuilder processBuilder = new ProcessBuilder("java", "-cp", "src/main/java/org/ioopm", "calculator.Calculator");
-        processBuilder.redirectInput(inputFilePath.toFile());
-        processBuilder.redirectOutput(outputFilePath.toFile());
-        
-        Process process = processBuilder.start();
+        File inputFile = new File("../resources/inputForTest.txt");
+        Scanner in = new Scanner(inputFile);
 
-        try {
-            process.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(buf);
 
-        assertTrue(Files.isSameFile(outputFilePath, expectedOutputFilePath));
+        Calculator calc = new Calculator(in, out);
+        calc.runEventLoop();
+
+        String output = buf.toString();
+        String expectedOutput = new String(Files.readAllBytes(Paths.get("../resources/expectedOutputForTest.txt")));
+
+        assertEquals(output, expectedOutput);
+        assertEquals(1, 2);
     }
+
 }
