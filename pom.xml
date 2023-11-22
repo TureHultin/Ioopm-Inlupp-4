@@ -45,6 +45,7 @@
                     <configuration>
                         <mainClass>org.ioopm.calculator.Calculator</mainClass>
                     </configuration>
+                    
                 </plugin>
             </plugins>
         </pluginManagement>

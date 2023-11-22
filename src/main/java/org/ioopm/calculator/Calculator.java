@@ -81,9 +81,8 @@ public class Calculator {
                     fullyEvaluated += 1;
                 }
             }
-
         }
-
+        printStatisics();
     }
 
     private void printNamedConstantError(NamedConstantChecker namedConstantChecker) {
@@ -117,11 +116,10 @@ public class Calculator {
         Calculator calculator = new Calculator();
 
         calculator.runEventLoop();
-        calculator.printStatisics();
     }
 
     private void printStatisics() {
-        System.out.println("Entered Expressions: " + enteredExpressions);
-        System.out.println("Fully Evaluated: " + fullyEvaluated);
+        out.println("Entered Expressions: " + enteredExpressions);
+        out.println("Fully Evaluated: " + fullyEvaluated);
     }
 }
