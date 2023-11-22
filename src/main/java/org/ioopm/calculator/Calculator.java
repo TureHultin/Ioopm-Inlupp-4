@@ -2,6 +2,8 @@ package org.ioopm.calculator;
 
 import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.ast.visitor.EvaluationVisitor;
+import org.ioopm.calculator.ast.visitor.NamedConstantChecker;
+import org.ioopm.calculator.ast.visitor.ReassignmentChecker;
 import org.ioopm.calculator.parser.CalculatorParser;
 import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
@@ -9,6 +11,8 @@ import org.ioopm.calculator.parser.SyntaxErrorException;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class Calculator {
@@ -57,26 +61,56 @@ public class Calculator {
                 }
             } else {
                 enteredExpressions += 1;
-                Environment savedVars = (Environment) vars.clone();
-                try {
+                NamedConstantChecker namedConstantChecker = new NamedConstantChecker();
+                if (!namedConstantChecker.check(expr)) {
+                    printNamedConstantError(namedConstantChecker);
+                    continue;
+                }
 
-                    final SymbolicExpression evaluated = new EvaluationVisitor(vars).evaluate(expr);
-                    out.println(evaluated);
-                    vars.put(new Variable("ans"), evaluated);
+                ReassignmentChecker reassignmentChecker = new ReassignmentChecker();
+                if (!reassignmentChecker.check(expr)) {
+                    printReassignmentError(reassignmentChecker);
+                    continue;
+                }
 
-                    if (evaluated.isConstant()) {
-                        fullyEvaluated += 1;
-                    }
+                final SymbolicExpression evaluated = new EvaluationVisitor(vars).evaluate(expr);
+                out.println(evaluated);
+                vars.put(new Variable("ans"), evaluated);
 
-                } catch (IllegalExpressionException e) {
-                    vars = savedVars;
-
-                    out.println(e.getMessage());
+                if (evaluated.isConstant()) {
+                    fullyEvaluated += 1;
                 }
             }
 
         }
 
+    }
+
+    private void printNamedConstantError(NamedConstantChecker namedConstantChecker) {
+        out.println("Error: Can not reassign named constants");
+
+        for (Assignment assignment : namedConstantChecker.getWrongAssignments()) {
+            out.println("    " + assignment);
+        }
+    }
+
+    private void printReassignmentError(ReassignmentChecker reassignmentChecker) {
+        HashSet<Variable> reassignedVariables = reassignmentChecker.getReassignedVariables();
+        out.print("Error: Can't reassign the variable");
+        if (reassignedVariables.size() != 1) {
+            out.print("s");
+        }
+        out.print(" ");
+        for (Iterator<Variable> iterator = reassignedVariables.iterator(); iterator.hasNext(); ) {
+            Variable v = iterator.next();
+            out.print(v.toString());
+
+            if (iterator.hasNext()) {
+                out.print(", ");
+            }
+        }
+
+        out.println(" more than once");
     }
 
     public static void main(String[] args) throws IOException {
