@@ -2,7 +2,7 @@ package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.ast.visitor.Visitor;
 
-public class Variable extends Atom {
+public class Variable extends Atom implements Comparable<Variable> {
     public Variable(String identifier) {
         this.identifier = identifier;
     }
@@ -14,6 +14,10 @@ public class Variable extends Atom {
         return identifier;
     }
 
+    @Override
+    public String getName() {
+        return this.toString();
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -33,5 +37,10 @@ public class Variable extends Atom {
     @Override
     public <T> T accept(Visitor<T> v) {
         return v.visit(this);
+    }
+
+    @Override
+    public int compareTo(Variable o) {
+        return this.identifier.compareTo(o.identifier);
     }
 }
