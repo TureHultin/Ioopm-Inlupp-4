@@ -6,7 +6,6 @@ import org.ioopm.calculator.ast.visitor.NamedConstantChecker;
 import org.ioopm.calculator.ast.visitor.ReassignmentChecker;
 import org.ioopm.calculator.parser.CalculatorParser;
 import org.ioopm.calculator.parser.EnvironmentScopes;
-import org.ioopm.calculator.parser.Environment;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 import org.ioopm.calculator.parser.SyntaxErrorException;
 

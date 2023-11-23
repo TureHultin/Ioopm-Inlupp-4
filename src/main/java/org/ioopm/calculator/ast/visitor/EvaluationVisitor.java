@@ -78,6 +78,7 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
         return expression;
     }
 
+
     @Override
     public SymbolicExpression visit(Clear n) {
         throw new RuntimeException("Can't eval() commands");
@@ -137,11 +138,24 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
 
     @Override
     public SymbolicExpression visit(Variable n) {
-        return vars.getOrDefault(n, n);
+        SymbolicExpression eval = vars.get(n);
+        if (eval != null) {
+            return eval;
+        } else {
+            return n;
+        }
     }
 
     @Override
     public SymbolicExpression visit(Vars n) {
         throw new RuntimeException("Can't eval() commands");
+    }
+
+    @Override
+    public SymbolicExpression visit(Scope n) {
+        vars.pushEnvironment();
+        SymbolicExpression exp = n.getExp().accept(this);
+        vars.popEnvironment();
+        return exp;
     }
 }

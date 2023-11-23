@@ -10,8 +10,8 @@ Welcome to the Symbolic Calculator!
 ? ? x + 3.0
 ? 2.0
 ? x + 3.0 + 12.0
-? {ans=x + 3.0 + 12.0, x=2.0, z=x + 3.0}
-? ? {}
+? Variables: ans = x + 3.0 + 12.0, x = 2.0, z = x + 3.0
+? ? Variables: 
 ? 3.0
 ? 4.0
 ? -10.0
