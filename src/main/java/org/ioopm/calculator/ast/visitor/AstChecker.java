@@ -91,4 +91,9 @@ public abstract class AstChecker implements Visitor<Boolean> {
     public Boolean visit(Vars n) {
         return true;
     }
+
+    @Override
+    public Boolean visit(Scope n) {
+        return n.getExp().accept(this);
+    }
 }

@@ -1,6 +1,7 @@
 import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.ast.visitor.EvaluationVisitor;
 import org.ioopm.calculator.parser.Environment;
+import org.ioopm.calculator.parser.EnvironmentScopes;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,7 @@ public class EvaluationTests {
 
     @BeforeEach
     void setVars() {
-        vars = new Environment();
+        vars = new EnvironmentScopes();
     }
 
     SymbolicExpression eval(SymbolicExpression expression) {

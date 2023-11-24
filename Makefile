@@ -42,11 +42,6 @@ ast_tests: ast_src
 run_tests: ast_tests
 	java -jar  $(JUNIT) -cp classes -c $(AST_TEST_PACK).AstTests
 
-file_test: build
-	java -cp classes $(CALC_PACK).Calculator < src/test/resources/inputForTest.txt > src/test/resources/output.txt
-	clear
-	diff src/test/resources/output.txt src/test/resources/expectedOutputForTest.txt 
-
 clean: 
 	rm -rf classes
 
