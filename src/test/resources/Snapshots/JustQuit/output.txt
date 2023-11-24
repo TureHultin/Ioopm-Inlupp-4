@@ -1,3 +1,0 @@
-Welcome to the Symbolic Calculator!
-? Entered Expressions: 0
-Fully Evaluated: 0

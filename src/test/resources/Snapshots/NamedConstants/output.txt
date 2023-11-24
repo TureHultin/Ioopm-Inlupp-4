@@ -1,0 +1,19 @@
+Welcome to the Symbolic Calculator!
+? 2.718281828459045
+? 6.02214076E23
+? 3.141592653589793
+? 42.0
+? Error: Can not reassign named constants
+    3.0 = e
+? Error: Can not reassign named constants
+    3.0 = L
+? Error: Can not reassign named constants
+    3.0 = pi
+? Error: Can not reassign named constants
+    3.0 = Answer
+? Error: Can not reassign named constants
+    3.0 = x = pi
+? 42.0
+? x
+? Entered Expressions: 11
+Fully Evaluated: 5

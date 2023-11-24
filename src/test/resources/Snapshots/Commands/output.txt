@@ -1,0 +1,12 @@
+Welcome to the Symbolic Calculator!
+? Variables: 
+? ? Variables: 
+? 3.0
+? Variables : ans = 3.0, x = 3.0
+? 2.0
+? Variables: ans = 2.0, x = 3.0
+? 8.0
+? Variables : a = 8.0, ans = 8.0, x = 3.0
+? ? Variables: 
+? Entered Expressions: 3
+Fully Evaluated: 3

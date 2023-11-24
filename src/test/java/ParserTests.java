@@ -4,6 +4,7 @@ import org.ioopm.calculator.parser.DuplicatedParametersException;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 import org.ioopm.calculator.parser.SyntaxErrorException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -62,7 +63,7 @@ public class ParserTests {
 
     @Test
     void nestedNegation() throws IOException, IllegalExpressionException {
-        SymbolicExpression tree = new Negation(new Negation(new Negation(new Variable("x"))));
+        SymbolicExpression tree = new Negation(new Negation(new Negation(new Addition(new Variable("a"), new Constant(8.0)))));
 
         String string = tree.toString();
         SymbolicExpression parseResult = parser.parseLine(string);

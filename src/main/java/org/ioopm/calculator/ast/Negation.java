@@ -15,7 +15,12 @@ public class Negation extends Unary {
 
     @Override
     public String toString() {
-        return getName() + getRhs().toString();
+        String rhs =  getRhs().toString();
+        if (getRhs().getPriority() <  getPriority()){
+            rhs = '(' + rhs + ')';
+        }
+        
+        return getName() + rhs;
     }
 
 

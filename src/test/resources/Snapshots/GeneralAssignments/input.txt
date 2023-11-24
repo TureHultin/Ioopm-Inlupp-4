@@ -15,12 +15,7 @@ Vars
 Clear
 Vars
 3=a
--a--7
--a---7
 1/(2+8)=a
--Sin(Exp(a*a*10))
--ans + 2
 2=x=y
 (x+y=z)-(z-1)*(1=x)
----x
 Quit

@@ -1,0 +1,10 @@
+Welcome to the Symbolic Calculator!
+? 2.0
+? 1.0 + x
+? 1.0
+? 3.0
+? 10.0
+? 5.0
+? Variables: ans = 5.0, x = 1.0, z = 5.0
+? Entered Expressions: 6
+Fully Evaluated: 5

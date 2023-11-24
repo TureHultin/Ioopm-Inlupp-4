@@ -1,0 +1,12 @@
+Vars
+Clear
+Vars
+3=x
+Vars
+{2=y}
+Vars
+x+5=a
+Vars
+Clear
+Vars
+Quit
