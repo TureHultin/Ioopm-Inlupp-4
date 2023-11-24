@@ -10,7 +10,7 @@
 To run the calculator
 
 ```shell
-mvn exec:java
+mvn compile exec:java
 ```
 
 ## Tests
