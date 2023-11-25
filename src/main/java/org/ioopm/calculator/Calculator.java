@@ -4,10 +4,7 @@ import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.ast.visitor.EvaluationVisitor;
 import org.ioopm.calculator.ast.visitor.NamedConstantChecker;
 import org.ioopm.calculator.ast.visitor.ReassignmentChecker;
-import org.ioopm.calculator.parser.CalculatorParser;
-import org.ioopm.calculator.parser.EnvironmentScopes;
-import org.ioopm.calculator.parser.IllegalExpressionException;
-import org.ioopm.calculator.parser.SyntaxErrorException;
+import org.ioopm.calculator.parser.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -42,9 +39,8 @@ public class Calculator {
         while (running) {
             final SymbolicExpression expr;
             out.print("? ");
-
             try {
-                expr = parser.parse(scanner.nextLine(), null);
+                expr = parser.parse(scanner);
             } catch (SyntaxErrorException | IllegalExpressionException exception) {
                 out.println(exception.getMessage());
                 continue;
@@ -74,12 +70,23 @@ public class Calculator {
                     continue;
                 }
 
-                final SymbolicExpression evaluated = new EvaluationVisitor(vars).evaluate(expr);
-                out.println(evaluated);
-                vars.put(new Variable("ans"), evaluated);
+                SymbolicExpression evaluated = null;
 
-                if (evaluated.isConstant()) {
-                    fullyEvaluated += 1;
+                try {
+                    evaluated = new EvaluationVisitor(vars).evaluate(expr);
+                } catch (WrongArgumentNumberException | IllegalExpressionException e) {
+                    out.println(e.getMessage());
+
+                }
+
+                if (evaluated != null) {
+                    out.println(evaluated);
+
+                    vars.put(new Variable("ans"), evaluated);
+
+                    if (evaluated.isConstant()) {
+                        fullyEvaluated += 1;
+                    }
                 }
             }
         }

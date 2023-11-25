@@ -1,5 +1,6 @@
 package org.ioopm.calculator.parser;
 
+import org.ioopm.calculator.ast.FunctionDeclaration;
 import org.ioopm.calculator.ast.SymbolicExpression;
 import org.ioopm.calculator.ast.Variable;
 
@@ -18,7 +19,13 @@ public class Environment extends HashMap<Variable, SymbolicExpression> {
 
             sb.append(v.getName());
             sb.append(" = ");
-            sb.append(this.get(v));
+
+            SymbolicExpression varContent = this.get(v);
+            if (varContent instanceof FunctionDeclaration f) {
+                sb.append(f.shortToString());
+            } else {
+                sb.append(varContent);
+            }
 
             if (iter.hasNext()) {
                 sb.append(", ");

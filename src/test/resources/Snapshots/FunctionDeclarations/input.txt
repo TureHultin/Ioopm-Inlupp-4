@@ -1,0 +1,6 @@
+function foo(a, b)
+    1 = y 
+end
+Vars
+foo
+Quit

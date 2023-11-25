@@ -1,11 +1,11 @@
 package org.ioopm.calculator.ast.visitor;
 
-import java.util.*;
 import org.ioopm.calculator.ast.Assignment;
 import org.ioopm.calculator.ast.Scope;
 import org.ioopm.calculator.ast.Variable;
 
 import java.util.HashSet;
+import java.util.Stack;
 
 public class ReassignmentChecker extends AstChecker {
     private final Stack<HashSet<Variable>> boundVariables = new Stack<>();
@@ -37,7 +37,7 @@ public class ReassignmentChecker extends AstChecker {
         boundVariables.pop();
         return result;
     }
-
+    
     public HashSet<Variable> getReassignedVariables() {
         return reassignedVariables;
     }

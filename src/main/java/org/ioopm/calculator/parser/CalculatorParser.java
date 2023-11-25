@@ -7,13 +7,14 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Scanner;
 
 /**
  * Represents the parsing of strings into valid expressions defined in the AST.
  */
 public class CalculatorParser {
     private StreamTokenizer st;
-    private Environment vars;
     private static char MULTIPLY = '*';
     private static char ADDITION = '+';
     private static char SUBTRACTION = '-';
@@ -25,25 +26,64 @@ public class CalculatorParser {
     private static String LOG = "Log";
     private static String EXP = "Exp";
     private static char ASSIGNMENT = '=';
-
+    private final static String FUNCTION = "function";
+    private boolean isFunctionParsing = false;
     // unallowerdVars is used to check if variabel name that we
     // want to assign new meaning to is a valid name eg 3 = Quit
     // or 10 + x = L is not allowed
     private final ArrayList<String> unallowedVars = new ArrayList<String>(Arrays.asList("Quit",
             "Vars",
-            "Clear"));
+            "Clear", "end", FUNCTION));
+
+    /**
+     * Used to parse the inputted string by the Calculator program
+     *
+     * @param scanner where to get the line(s) used to parse
+     * @return a SymbolicExpression to be evaluated
+     * @throws IOException by nextToken() if it reads invalid input
+     */
+    public SymbolicExpression parse(Scanner scanner) throws IOException, IllegalExpressionException {
+        SymbolicExpression statement = parseLine(scanner.nextLine());
+        if (isFunctionParsing()) {
+            FunctionDeclaration declaration = (FunctionDeclaration) statement;
+
+            Sequence body = functionBody(scanner);
+            declaration.setBody(body);
+            return declaration;
+        }
+
+        return statement;
+    }
+
+    private Sequence functionBody(Scanner scanner) throws IOException {
+        Sequence body = new Sequence();
+
+        while (isFunctionParsing()) {
+            SymbolicExpression bodyStmt = parseLine(scanner.nextLine());
+
+            if (bodyStmt instanceof FunctionDeclaration nestedDecl) {
+                throw new SyntaxErrorException("Error: Can't nest function declaration, trying to nest " + nestedDecl.getName() + " in other function");
+            }
+
+            if (!(bodyStmt.equals(End.instance()))) {
+                body.add(bodyStmt);
+            }
+        }
+        if (body.getStatements().isEmpty()) {
+            throw new IllegalExpressionException("Error: function has no statements");
+        }
+        return body;
+    }
 
     /**
      * Used to parse the inputted string by the Calculator program
      *
      * @param inputString the string used to parse
-     * @param vars        the Environment in which the variables exist
      * @return a SymbolicExpression to be evaluated
      * @throws IOException by nextToken() if it reads invalid input
      */
-    public SymbolicExpression parse(String inputString, Environment vars) throws IOException, IllegalExpressionException {
+    public SymbolicExpression parseLine(String inputString) throws IOException, IllegalExpressionException {
         this.st = new StreamTokenizer(new StringReader(inputString)); // reads from inputString via stringreader.
-        this.vars = vars;
         this.st.ordinaryChar('-');
         this.st.ordinaryChar('/');
         this.st.eolIsSignificant(true);
@@ -66,7 +106,16 @@ public class CalculatorParser {
         }
 
         if (this.st.ttype == this.st.TT_WORD) { // vilken typ det senaste tecken vi läste in hade.
-            if (this.st.sval.equals("Quit") || this.st.sval.equals("Vars") || this.st.sval.equals("Clear")) { // sval = string Variable
+            if (this.st.sval.equals(FUNCTION)) {
+                result = functionDeclaration();
+                this.isFunctionParsing = true;
+            } else if (this.st.sval.equals("Quit") || this.st.sval.equals("Vars") || this.st.sval.equals("Clear")) { // sval = string Variable
+                result = command();
+            } else if (this.st.sval.equals("end")) {
+                if (!isFunctionParsing) {
+                    throw new SyntaxErrorException("Error: end must have a corresponding function declaration");
+                }
+                isFunctionParsing = false;
                 result = command();
             } else {
                 result = assignment(); // går vidare med uttrycket.
@@ -85,11 +134,54 @@ public class CalculatorParser {
         return result;
     }
 
+    private String nonConstantIdentifier() throws IOException {
+        SymbolicExpression nameExpression = identifier();
+        if (nameExpression instanceof Variable var) {
+            return var.getName();
+        } else {
+            throw new SyntaxErrorException("Error: Constant '" + nameExpression + "' can't be used as a function name");
+        }
+
+    }
+
+    /**
+     * Parses a function declaration
+     *
+     * @return an instance of Quit, Clear or Vars depending on the token parsed
+     * @throws IOException by nextToken() if it reads invalid input
+     */
+    private SymbolicExpression functionDeclaration() throws IOException, IllegalExpressionException {
+        this.st.nextToken();
+
+        String name = nonConstantIdentifier();
+
+        if (this.st.nextToken() != '(') {
+            throw new SyntaxErrorException("expected '('");
+        }
+
+        ArrayList<String> parameters = new ArrayList<>();
+
+        boolean hasComma = true;
+        while (hasComma && this.st.nextToken() != ')') {
+            parameters.add(nonConstantIdentifier());
+            hasComma = this.st.nextToken() == ',';
+        }
+
+        Collection<DuplicatedParametersException.DuplicatedParameter> duplicated =
+                DuplicatedParametersException.calculateDuplicated(parameters);
+
+        if (!duplicated.isEmpty()) {
+            throw new DuplicatedParametersException(name, duplicated);
+        }
+
+        return new FunctionDeclaration(name, parameters);
+    }
+
 
     /**
      * Checks what kind of command that should be returned
      *
-     * @return an instance of Quit, Clear or Vars depending on the token parsed
+     * @return an instance of Quit, Clear, Vars or End depending on the token parsed
      * @throws IOException by nextToken() if it reads invalid input
      */
     private SymbolicExpression command() throws IOException, IllegalExpressionException {
@@ -97,6 +189,8 @@ public class CalculatorParser {
             return Quit.instance();
         } else if (this.st.sval.equals("Clear")) {
             return Clear.instance();
+        } else if (this.st.sval.equals("end")) {
+            return End.instance();
         } else {
             return Vars.instance();
         }
@@ -228,8 +322,7 @@ public class CalculatorParser {
             if (this.st.nextToken() != ')') {
                 throw new SyntaxErrorException("expected ')'");
             }
-        } 
-        else if (this.st.ttype == '{') {
+        } else if (this.st.ttype == '{') {
             this.st.nextToken();
             result = new Scope(assignment());
             /// This captures unbalanced curly brackets!
@@ -248,12 +341,39 @@ public class CalculatorParser {
                 result = unary();
             } else {
                 result = identifier();
+
             }
         } else {
             this.st.pushBack();
             result = number();
         }
+
+        if (this.st.nextToken() == '(') {
+            while (this.st.ttype == '(') {
+                result = new FunctionCall(result, argumentList());
+
+                this.st.nextToken();
+            }
+        } else {
+            st.pushBack();
+        }
         return result;
+    }
+
+    private ArrayList<SymbolicExpression> argumentList() throws IOException {
+        if (this.st.ttype != '(') {
+            throw new RuntimeException("Internal Parser Error: Expected (");
+        }
+
+        ArrayList<SymbolicExpression> arguments = new ArrayList<>();
+
+        boolean hasComma = true;
+        while (hasComma && this.st.nextToken() != ')') {
+            arguments.add(assignment());
+            hasComma = this.st.nextToken() == ',';
+        }
+
+        return arguments;
     }
 
     /**
@@ -297,5 +417,9 @@ public class CalculatorParser {
         } else {
             throw new SyntaxErrorException("Error: Expected number");
         }
+    }
+
+    public boolean isFunctionParsing() {
+        return isFunctionParsing;
     }
 }

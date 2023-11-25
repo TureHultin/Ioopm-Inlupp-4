@@ -1,0 +1,7 @@
+Welcome to the Symbolic Calculator!
+? ? Variables: foo = function foo(a, b)
+? function foo(a, b)
+1.0 = y
+end
+? Entered Expressions: 2
+Fully Evaluated: 0

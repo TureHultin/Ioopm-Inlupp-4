@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EvaluationTests {
@@ -92,5 +94,31 @@ public class EvaluationTests {
         Assertions.assertTrue(vars.isEmpty(), "Vars not updated after exception");
 
         assertEquals(new Variable("Answer"), eval(new Variable("Answer")));
+    }
+
+    @Test
+    void funcitonReturns() {
+        FunctionDeclaration declaration = new FunctionDeclaration("foo", new ArrayList<>());
+        FunctionCall call = new FunctionCall(new Variable("foo"), new ArrayList<>());
+        declaration.addToBody(new Constant(1));
+
+        eval(declaration);
+
+        assertEquals(new Constant(1), eval(call));
+    }
+
+    @Test
+    void canCallNested() {
+        ArrayList<String> params = new ArrayList<>();
+        FunctionDeclaration declaration = new FunctionDeclaration("foo", params);
+        declaration.addToBody(new Variable("foo"));
+        int nestings = 5;
+        SymbolicExpression call = new Variable("foo");
+        for (int i = 0; i < nestings; i++) {
+            call = new FunctionCall(call, new ArrayList<>());
+        }
+
+        eval(declaration);
+        assertEquals(declaration, eval(call));
     }
 }

@@ -2,15 +2,18 @@ package org.ioopm.calculator.ast.visitor;
 
 import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.parser.Environment;
+import org.ioopm.calculator.parser.EnvironmentScopes;
 import org.ioopm.calculator.parser.IllegalExpressionException;
+import org.ioopm.calculator.parser.WrongArgumentNumberException;
 
+import java.util.ArrayList;
 import java.util.function.BinaryOperator;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.UnaryOperator;
 
 public class EvaluationVisitor implements Visitor<SymbolicExpression> {
-    private final Environment vars;
+    private Environment vars;
 
     public EvaluationVisitor(Environment vars) {
         this.vars = vars;
@@ -157,5 +160,77 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
         SymbolicExpression exp = n.getExp().accept(this);
         vars.popEnvironment();
         return exp;
+    }
+
+    @Override
+    public SymbolicExpression visit(FunctionDeclaration n) {
+        //TODO: don't allow global access and scoping
+
+        //TODO: Figure out how to handle unbound variables returned from the function
+        // EX:
+        // function foo()
+        //     x 
+        // end 
+        // foo() = y
+        // y // returns x
+        // 1 = x 
+        // y // should now not return
+
+        vars.put(new Variable(n.getName()), n);
+
+        return null;
+    }
+
+    @Override
+    public SymbolicExpression visit(FunctionCall n) {
+        SymbolicExpression callee = n.getCallee().accept(this);
+
+        if (!(callee instanceof FunctionDeclaration)) {
+            throw new IllegalExpressionException("Error: the callee '" + n.getCallee() + "' did not evaluate to a function");
+        }
+
+        final FunctionDeclaration declaration = (FunctionDeclaration) callee;
+        ArrayList<String> parameters = declaration.getParameters();
+
+        if (parameters.size() != n.getArguments().size()) {
+            throw new WrongArgumentNumberException(n.getArguments().size(), declaration);
+        }
+
+        EnvironmentScopes calledScope = new EnvironmentScopes();
+
+        // We put the called function into the inner scope
+        // it's important we put it int first to allow shadowing the name with the arguments
+        calledScope.put(new Variable(declaration.getName()), declaration);
+
+        // We need to evaluate the arguments in the calling scope, 
+        // but we want to put the values in the called functions scope
+        for (int i = 0; i < parameters.size(); i++) {
+            SymbolicExpression argument = n.getArguments().get(i).accept(this);
+
+            calledScope.put(new Variable(parameters.get(i)), argument);
+        }
+
+        Environment outer = vars;
+        // We evaluate the body in the new separate scope
+        vars = calledScope;
+        SymbolicExpression result = declaration.getBody().accept(this);
+
+        vars = outer;
+        return result;
+    }
+
+    @Override
+    public SymbolicExpression visit(Sequence n) {
+        SymbolicExpression last = null;
+
+        for (SymbolicExpression expression : n.getStatements()) {
+            last = expression.accept(this);
+        }
+
+        if (last == null) {
+            throw new IllegalExpressionException("Error: Executed an empty sequence");
+        }
+
+        return last;
     }
 }
