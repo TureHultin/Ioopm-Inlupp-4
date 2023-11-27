@@ -19,6 +19,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ParserTests {
     CalculatorParser parser;
 
+    void assertRoundtrip(SymbolicExpression tree) throws IOException {
+        SymbolicExpression parsed = parser.parse(new Scanner(tree.toString()));
+        assertEquals(tree, parsed);
+    }
+
     @BeforeEach
     void initParser() {
         parser = new CalculatorParser();
@@ -133,13 +138,28 @@ public class ParserTests {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"foo()", "bar(1, 1, 1)", "(foo)()", "(foo = x)()", "baz(a)", "baz()(c)", "{foo}(bla)"})
+    @ValueSource(strings = {"foo()", "bar(1, 1, 1)", "baz(a)", "baz()(c)"})
     void canParseCall(String functionCall) throws IOException {
         SymbolicExpression parsed = parser.parseLine(functionCall);
 
         assertInstanceOf(FunctionCall.class, parsed);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"{foo}()", "{foo = x}(1, 1, 1)", "(baz)(a)", "bar("})
+    void cantParseWeirdCalls(String functionCall) throws IOException {
+        assertThrows(SyntaxErrorException.class, () -> parser.parseLine(functionCall));
+    }
+
+    @Test
+    void conditionalRoundtrip() throws IOException {
+        Scope thanBranch = new Scope(new Constant(10));
+        Scope elseBranch = new Scope(new Variable("x"));
+
+        SymbolicExpression tree = new Conditional(new Constant(1), Conditional.Comparison.Equals, new Variable("x"), thanBranch, elseBranch);
+
+        assertRoundtrip(tree);
+    }
 
     private FunctionCall fnCall(SymbolicExpression callee, double arg) {
         ArrayList<SymbolicExpression> arguments = new ArrayList<>();

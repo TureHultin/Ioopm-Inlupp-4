@@ -1,6 +1,7 @@
 package org.ioopm.calculator;
 
 import org.ioopm.calculator.ast.*;
+import org.ioopm.calculator.ast.visitor.CallDepthExceededException;
 import org.ioopm.calculator.ast.visitor.EvaluationVisitor;
 import org.ioopm.calculator.ast.visitor.NamedConstantChecker;
 import org.ioopm.calculator.ast.visitor.ReassignmentChecker;
@@ -41,7 +42,7 @@ public class Calculator {
             out.print("? ");
             try {
                 expr = parser.parse(scanner);
-            } catch (SyntaxErrorException | IllegalExpressionException exception) {
+            } catch (SyntaxErrorException | IllegalExpressionException | CallDepthExceededException exception) {
                 out.println(exception.getMessage());
                 continue;
             }

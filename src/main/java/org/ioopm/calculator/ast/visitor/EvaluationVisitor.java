@@ -14,6 +14,8 @@ import java.util.function.UnaryOperator;
 
 public class EvaluationVisitor implements Visitor<SymbolicExpression> {
     private Environment vars;
+    private int callDepth = 0;
+    private int maxCallDepth = 200;
 
     public EvaluationVisitor(Environment vars) {
         this.vars = vars;
@@ -183,6 +185,11 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
 
     @Override
     public SymbolicExpression visit(FunctionCall n) {
+        callDepth += 1;
+        if (callDepth > maxCallDepth) {
+            throw new CallDepthExceededException("Error: Execeeded " + maxCallDepth + " calls");
+        }
+        
         SymbolicExpression callee = n.getCallee().accept(this);
 
         if (!(callee instanceof FunctionDeclaration)) {
@@ -216,6 +223,7 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
         SymbolicExpression result = declaration.getBody().accept(this);
 
         vars = outer;
+        callDepth -= 1;
         return result;
     }
 
@@ -232,5 +240,17 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
         }
 
         return last;
+    }
+
+    @Override
+    public SymbolicExpression visit(Conditional n) {
+        final double lhs = n.getLhs().accept(this).getValue();
+        final double rhs = n.getRhs().accept(this).getValue();
+
+        if (Conditional.compare(n.getComparison(), lhs, rhs)) {
+            return n.getThenBranch().accept(this);
+        } else {
+            return n.getElseBranch().accept(this);
+        }
     }
 }

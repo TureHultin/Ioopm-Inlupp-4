@@ -1,5 +1,6 @@
 package org.ioopm.calculator.parser;
 
+
 import org.ioopm.calculator.ast.*;
 
 import java.io.IOException;
@@ -26,14 +27,25 @@ public class CalculatorParser {
     private static String LOG = "Log";
     private static String EXP = "Exp";
     private static char ASSIGNMENT = '=';
+    private final static String IF = "if";
+    private final static String ELSE = "else";
     private final static String FUNCTION = "function";
+    private final static String END = "end";
     private boolean isFunctionParsing = false;
     // unallowerdVars is used to check if variabel name that we
     // want to assign new meaning to is a valid name eg 3 = Quit
     // or 10 + x = L is not allowed
     private final ArrayList<String> unallowedVars = new ArrayList<String>(Arrays.asList("Quit",
             "Vars",
-            "Clear", "end", FUNCTION));
+            "Clear",
+            SIN,
+            COS,
+            LOG,
+            EXP,
+            IF,
+            ELSE,
+            END,
+            FUNCTION));
 
     /**
      * Used to parse the inputted string by the Calculator program
@@ -134,6 +146,17 @@ public class CalculatorParser {
         return result;
     }
 
+    private String foundToken() {
+        return switch (this.st.ttype) {
+            case StreamTokenizer.TT_WORD -> "WORD: " + this.st.sval;
+            case StreamTokenizer.TT_EOF -> "End of file";
+            case StreamTokenizer.TT_EOL -> "End of line";
+            case StreamTokenizer.TT_NUMBER -> String.valueOf(this.st.nval);
+            default -> String.valueOf((char) this.st.ttype);
+        };
+
+    }
+
     private String nonConstantIdentifier() throws IOException {
         SymbolicExpression nameExpression = identifier();
         if (nameExpression instanceof Variable var) {
@@ -156,7 +179,7 @@ public class CalculatorParser {
         String name = nonConstantIdentifier();
 
         if (this.st.nextToken() != '(') {
-            throw new SyntaxErrorException("expected '('");
+            throw new SyntaxErrorException("expected '(' found " + foundToken());
         }
 
         ArrayList<String> parameters = new ArrayList<>();
@@ -237,7 +260,9 @@ public class CalculatorParser {
      */
     private SymbolicExpression identifier() throws IOException, IllegalExpressionException {
         SymbolicExpression result;
-
+        if (this.st.ttype != StreamTokenizer.TT_WORD) {
+            throw new SyntaxErrorException("Error: Expected identifier, found " + foundToken());
+        }
         if (this.unallowedVars.contains(this.st.sval)) {
             throw new IllegalExpressionException("Error: cannot redefine " + this.st.sval);
         }
@@ -320,19 +345,34 @@ public class CalculatorParser {
             result = assignment();
             /// This captures unbalanced parentheses!
             if (this.st.nextToken() != ')') {
-                throw new SyntaxErrorException("expected ')'");
+                throw new SyntaxErrorException("Error: Expected ')' found " + foundToken());
             }
         } else if (this.st.ttype == '{') {
-            this.st.nextToken();
-            result = new Scope(assignment());
-            /// This captures unbalanced curly brackets!
-            if (this.st.nextToken() != '}') {
-                throw new SyntaxErrorException("expected '}'");
-            }
+            result = scope();
         } else if (this.st.ttype == NEGATION) {
             result = unary();
         } else if (this.st.ttype == this.st.TT_WORD) {
-            if (st.sval.equals(SIN) ||
+            if (st.sval.equals(IF)) {
+                this.st.nextToken();
+                SymbolicExpression lhs = expression();
+                this.st.nextToken();
+                Conditional.Comparison comparison = comparison();
+
+                SymbolicExpression rhs = expression();
+                this.st.nextToken();
+
+                Scope thanBranch = scope();
+                this.st.nextToken();
+                if (this.st.ttype != this.st.TT_WORD || !this.st.sval.equals(ELSE)) {
+                    throw new SyntaxErrorException("Error: Expected else found " + foundToken());
+                }
+                this.st.nextToken();
+
+                Scope elseBranch = scope();
+
+                result = new Conditional(lhs, comparison, rhs, thanBranch, elseBranch);
+
+            } else if (st.sval.equals(SIN) ||
                     st.sval.equals(COS) ||
                     st.sval.equals(EXP) ||
                     st.sval.equals(NEG) ||
@@ -341,37 +381,84 @@ public class CalculatorParser {
                 result = unary();
             } else {
                 result = identifier();
-
+                // We only allow you to call identifiers or function calls
+                if (this.st.nextToken() == '(') {
+                    while (this.st.ttype == '(') {
+                        result = new FunctionCall(result, argumentList());
+                        this.st.nextToken(); // Consume ')'
+                    }
+                }
+                st.pushBack();
             }
         } else {
             this.st.pushBack();
             result = number();
         }
 
-        if (this.st.nextToken() == '(') {
-            while (this.st.ttype == '(') {
-                result = new FunctionCall(result, argumentList());
 
-                this.st.nextToken();
-            }
-        } else {
-            st.pushBack();
+        return result;
+    }
+
+    private Conditional.Comparison comparison() throws IOException {
+        Conditional.Comparison initial = switch (this.st.ttype) {
+            case '>' -> Conditional.Comparison.GreaterThan;
+            case '<' -> Conditional.Comparison.LessThan;
+            case '=' -> Conditional.Comparison.Equals;
+            default ->
+                    throw new SyntaxErrorException("Error: Expected one of '<' '<=' '>' '>=' '==' found " + foundToken());
+        };
+        this.st.nextToken();
+        if (this.st.ttype == '=') {
+            this.st.nextToken();
+            return switch (initial) {
+                case Equals -> Conditional.Comparison.Equals;
+                case LessThan -> Conditional.Comparison.LessOrEqualThan;
+                case GreaterThan -> Conditional.Comparison.GreaterOrEqualThan;
+                default -> throw new IllegalStateException("Unexpected value: " + initial);
+            };
         }
+
+        return initial;
+    }
+
+    private Scope scope() throws IOException {
+        if (this.st.ttype != '{') {
+            throw new SyntaxErrorException("Error: Expected '{' found " + foundToken());
+        }
+
+        this.st.nextToken();
+        final Scope result = new Scope(assignment());
+        /// This captures unbalanced curly brackets!
+        if (this.st.nextToken() != '}') {
+            throw new SyntaxErrorException("Error: expected '}' found " + foundToken());
+        }
+
         return result;
     }
 
     private ArrayList<SymbolicExpression> argumentList() throws IOException {
         if (this.st.ttype != '(') {
-            throw new RuntimeException("Internal Parser Error: Expected (");
+            throw new RuntimeException("Internal Parser Error: Expected '(' found " + foundToken());
         }
+        this.st.nextToken();
 
         ArrayList<SymbolicExpression> arguments = new ArrayList<>();
 
         boolean hasComma = true;
-        while (hasComma && this.st.nextToken() != ')') {
+        while (hasComma && this.st.ttype != ')') {
             arguments.add(assignment());
-            hasComma = this.st.nextToken() == ',';
+            this.st.nextToken(); // done with the assignment;
+            hasComma = this.st.ttype == ',';
+
+            if (hasComma) {
+                this.st.nextToken();
+            }
         }
+
+        if (this.st.ttype != ')') {
+            throw new RuntimeException("Parser Error: Consumed to much");
+        }
+
 
         return arguments;
     }
@@ -415,7 +502,7 @@ public class CalculatorParser {
         if (this.st.ttype == this.st.TT_NUMBER) {
             return new Constant(this.st.nval);
         } else {
-            throw new SyntaxErrorException("Error: Expected number");
+            throw new SyntaxErrorException("Error: Expected number found " + foundToken());
         }
     }
 

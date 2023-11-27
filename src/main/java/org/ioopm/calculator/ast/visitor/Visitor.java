@@ -40,4 +40,6 @@ public interface Visitor<T> {
     public T visit(FunctionCall n);
 
     public T visit(Sequence n);
+
+    public T visit(Conditional n);
 }
