@@ -13,6 +13,12 @@ To run the calculator
 mvn compile exec:java
 ```
 
+or
+
+```shell
+make run
+```
+
 ## Tests
 
 The code is tested using `JUnit` and the tests can be ran using
