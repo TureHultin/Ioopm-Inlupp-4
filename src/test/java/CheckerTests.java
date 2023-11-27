@@ -2,6 +2,12 @@ import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.ast.visitor.NamedConstantChecker;
 import org.ioopm.calculator.ast.visitor.ReassignmentChecker;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,4 +67,50 @@ public class CheckerTests {
         assertFalse(check_reassignment(expr));
     }
 
+
+    static <T> ArrayList<T> params(T... params) {
+        ArrayList<T> p = new ArrayList<>();
+        Collections.addAll(p, params);
+        return p;
+    }
+
+    static FunctionDeclaration funcDecl(String name, ArrayList<String> params, SymbolicExpression... statements) {
+        FunctionDeclaration f = new FunctionDeclaration(name, params);
+        for (SymbolicExpression statement : statements) {
+            f.addToBody(statement);
+        }
+        return f;
+    }
+
+    static Stream<SymbolicExpression> failingReassignment() {
+        return Stream.of(
+                CheckerTests.funcDecl("foo", CheckerTests.params(),
+                        new Assignment(new Constant(1), new Variable("foo"))),
+                CheckerTests.funcDecl("foo", CheckerTests.params("bar"),
+                        new Assignment(new Constant(1), new Variable("bar"))),
+                CheckerTests.funcDecl("calc", CheckerTests.params(),
+                        new Assignment(new Constant(1), new Variable("bar")),
+                        new Assignment(new Constant(2), new Variable("bar")),
+                        new Assignment(new Constant(2), new Variable("baz"))
+                ),
+
+                new FunctionCall(new Variable("foo"), CheckerTests.params(
+                        new Assignment(new Constant(5), new Variable("x")),
+                        new Assignment(new Constant(1), new Variable("x"))
+                ))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("failingReassignment")
+    void dontAllowReassignment(SymbolicExpression expression) {
+        assertFalse(new ReassignmentChecker().check(expression));
+    }
+
+    @Test
+    void DontAllowNamedConstantReassignmenInFunc() {
+        FunctionDeclaration declaration = funcDecl("foo", params("bla"),
+                new Assignment(new Variable("bla"), new NamedConstant("pi", 4)));
+        assertFalse(new NamedConstantChecker().check(declaration));
+    }
 }

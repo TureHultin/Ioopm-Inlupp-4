@@ -1,6 +1,7 @@
 package org.ioopm.calculator.ast.visitor;
 
 import org.ioopm.calculator.ast.Assignment;
+import org.ioopm.calculator.ast.FunctionDeclaration;
 import org.ioopm.calculator.ast.Scope;
 import org.ioopm.calculator.ast.Variable;
 
@@ -37,7 +38,19 @@ public class ReassignmentChecker extends AstChecker {
         boundVariables.pop();
         return result;
     }
-    
+
+    @Override
+    public Boolean visit(FunctionDeclaration n) {
+        ReassignmentChecker innerChecker = new ReassignmentChecker();
+
+        innerChecker.boundVariables.peek().add(new Variable(n.getName()));
+        for (String parameter : n.getParameters()) {
+            innerChecker.boundVariables.peek().add(new Variable(parameter));
+        }
+
+        return innerChecker.check(n.getBody());
+    }
+
     public HashSet<Variable> getReassignedVariables() {
         return reassignedVariables;
     }

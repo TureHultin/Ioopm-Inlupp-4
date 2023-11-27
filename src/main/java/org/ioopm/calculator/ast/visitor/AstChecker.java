@@ -94,7 +94,7 @@ public abstract class AstChecker implements Visitor<Boolean> {
 
     @Override
     public Boolean visit(FunctionDeclaration n) {
-        return true;
+        return n.getBody().accept(this);
     }
 
     @Override
