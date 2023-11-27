@@ -166,18 +166,7 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
 
     @Override
     public SymbolicExpression visit(FunctionDeclaration n) {
-        //TODO: don't allow global access and scoping
-
-        //TODO: Figure out how to handle unbound variables returned from the function
-        // EX:
-        // function foo()
-        //     x 
-        // end 
-        // foo() = y
-        // y // returns x
-        // 1 = x 
-        // y // should now not return
-
+        
         vars.put(new Variable(n.getName()), n);
 
         return null;
@@ -189,7 +178,7 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
         if (callDepth > maxCallDepth) {
             throw new CallDepthExceededException("Error: Execeeded " + maxCallDepth + " calls");
         }
-        
+
         SymbolicExpression callee = n.getCallee().accept(this);
 
         if (!(callee instanceof FunctionDeclaration)) {
