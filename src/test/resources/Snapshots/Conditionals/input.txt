@@ -1,0 +1,5 @@
+3=x
+if x<6 {4} else {2}
+6=y
+if y=x*2 {1} else {0}
+Quit

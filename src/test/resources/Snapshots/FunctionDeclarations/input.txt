@@ -1,6 +1,17 @@
 function foo(a, b)
-    1 = y 
+    1
 end
 Vars
-foo
+foo(8, 8)
+function factorial(n)
+if n>1 {factorial(n-1)*n} else {1}
+end
+factorial(7)
+function gcd(a, b)
+b-a=ba
+a-b=ab
+if a==b {a} else {if a<b {gcd(a, ba)} else {gcd(ab, b)}}
+end
+gcd(88292, 8968)
+gcd(factorial(7), factorial(9))
 Quit

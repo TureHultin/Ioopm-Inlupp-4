@@ -1,0 +1,7 @@
+Welcome to the Symbolic Calculator!
+? 3.0
+? 4.0
+? 6.0
+? 1.0
+? Entered Expressions: 4
+Fully Evaluated: 4
